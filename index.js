@@ -1,27 +1,21 @@
 const express = require('express');
-const { BotFrameworkAdapter } = require('botbuilder');
 const MyBot = require("./src/bot");
-// const basicAuth = require('basic-auth-connect');
+const bodyParser = require('body-parser');
 
 const myBot = new MyBot();
 const app = express();
-// app.use(basicAuth(function(user, pass) {
-//   return (user === 'testuser' && pass === 'test');
-// }));
+app.use(bodyParser.json());
 
-const adapter = new BotFrameworkAdapter({
-  appId: process.env.BOT_APP_ID,
-  appPassword: process.env.BOT_APP_PASSWORD,
-});
+// app.post('/api/messages', (req, res) => {
+  // adapter.processActivity(req, res, async context => {
+  //   await myBot.onTurn(context);
+  // });
+// });
 
-adapter.onTurnError = async context => {
-  await context.sendActivity('Oops. Something went wrong!');
-};
-
-app.post('/api/messages', (req, res) => {
-  adapter.processActivity(req, res, async context => {
-    await myBot.onTurn(context);
-  });
+app.post('/api/messages', async (req, res) => {
+  const result = await myBot.onChat(req.body.message);
+  console.log(result);
+  res.send(result);
 });
 
 app.get('/api/isActive', (req, res)=>{

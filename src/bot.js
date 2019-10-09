@@ -1,22 +1,28 @@
-const { ActivityTypes } = require('botbuilder');
-const { Recognizer } = require('node-nlp/lib');
+// const { ActivityTypes } = require('botbuilder');
+const { NlpManager } = require('node-nlp/lib');
 const trainnlp = require('./train-nlp');
 
 class MyBot {
   constructor() {
-    this.recognizer = new Recognizer();
-    this.recognizer.nlpManager.addLanguage('en');
-    trainnlp(this.recognizer.nlpManager, console.log);
+    this.nlpManager = new NlpManager({ languages: ['en'] });
+    this.threshold = 0.75;
+    trainnlp(this.nlpManager, console.log);
   }
 
-  async onTurn(turnContext) {
-    if (turnContext.activity.type === ActivityTypes.Message) {
-      try {
-        const result = await this.recognizer.recognize(turnContext);
-        await turnContext.sendActivity(result.answer);
-      } catch (ex) {
-        await turnContext.sendActivity('Opps! there was an error recognizing!');
+  async onChat(line){
+    let _response = "";
+    try {
+      const result = await this.nlpManager.process(line); 
+      const answer = result.score > this.threshold && result.answer ? result.answer : "Sorry, I don't understand";
+      let sentiment = '';
+      if (result.sentiment.score !== 0) {
+        sentiment = `  ${result.sentiment.score > 0 ? ':)' : ':('}   Confidence(${result.score}), Sentiment(${result.sentiment.score})`;
       }
+      _response = `bot> ${answer}${sentiment}`;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      return _response;
     }
   }
 }
