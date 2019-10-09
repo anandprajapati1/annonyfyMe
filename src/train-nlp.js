@@ -34,6 +34,7 @@ module.exports.initTrainingNlp = async function initTrainingNlp(manager, say) {
   manager.addDocument('en', 'you are annoying me so much', 'agent.annoying');
   manager.addDocument('en', 'are you working today', 'agent.busy');
   manager.addRegexEntity('_creditcard', 'en', /[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|[0-9]{16}/gi);
+  manager.addDocument('en', 'today', 'date');
   say('Training, please wait..');
   const hrstart = process.hrtime();
   await manager.train();
@@ -49,6 +50,7 @@ module.exports.initTrainingNlp = async function initTrainingNlp(manager, say) {
   manager.addAnswer('en', 'phonenumber', "Found sensitive detail(phone)");
   manager.addAnswer('en', 'email', "Found sensitive detail(email)");
   manager.addAnswer('en', 'datetime', "Found sensitive detail(date)");
+  manager.addAnswer('en', 'date', "Found sensitive detail(date)");
   
   manager.save('./model.nlp');
 };
