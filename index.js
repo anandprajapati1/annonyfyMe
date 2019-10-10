@@ -6,14 +6,8 @@ const myBot = new MyBot();
 const app = express();
 app.use(bodyParser.json());
 
-// app.post('/api/messages', (req, res) => {
-// adapter.processActivity(req, res, async context => {
-//   await myBot.onTurn(context);
-// });
-// });
-
 app.post('/api/messages', async (req, res) => {
-  const result = await myBot.onChat2(req.body.message);
+  const result = await myBot.onChat(req.body.message);
   res.send(result);
 });
 

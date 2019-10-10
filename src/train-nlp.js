@@ -33,8 +33,13 @@ module.exports.initTrainingNlp = async function initTrainingNlp(manager, say) {
   manager.addDocument('en', 'your age', 'agent.age');
   manager.addDocument('en', 'you are annoying me so much', 'agent.annoying');
   manager.addDocument('en', 'are you working today', 'agent.busy');
-  manager.addRegexEntity('_creditcard', 'en', /[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}|[0-9]{16}/gi);
-  manager.addDocument('en', 'today', 'date');
+  manager.addRegexEntity('creditcard', 'en', /([0-9]{4}-([0-9]{4}-[0-9]{4}-[0-9]{4}|[0-9]{6}-[0-9]{5}))|[0-9]{16}/gi);
+  manager.addRegexEntity('name', 'en', /(\s*(my)*\s*(name)+\s*(is)*\s*)|(\s*is\s*(my)*\s*name)/gi);
+  // manager.addDocument('en', 'Hello my name is %name%', 'name');
+  // manager.addDocument('en', 'This is my name %name%', 'name');
+  // manager.addDocument('en', 'My name is %name%', 'name');
+  // manager.addDocument('en', 'Name %name%', 'name');
+  // manager.addDocument('en', '%name% is my name', 'name');
   say('Training, please wait..');
   const hrstart = process.hrtime();
   await manager.train();
@@ -46,27 +51,29 @@ module.exports.initTrainingNlp = async function initTrainingNlp(manager, say) {
   manager.addAnswer('en', 'agent.age', "I'm very young");
   manager.addAnswer('en', 'agent.annoying', "I'll try not to annoy you");
   manager.addAnswer('en', 'agent.busy', "Please wait");
-  manager.addAnswer('en', '_creditcard', "Found sensitive detail(credit card)");
+  manager.addAnswer('en', 'creditcard', "Found sensitive detail(credit/debit card)");
   manager.addAnswer('en', 'phonenumber', "Found sensitive detail(phone)");
   manager.addAnswer('en', 'email', "Found sensitive detail(email)");
   manager.addAnswer('en', 'datetime', "Found sensitive detail(date)");
   manager.addAnswer('en', 'date', "Found sensitive detail(date)");
-  
+  manager.addAnswer('en', 'name', "Found sensitive detail(name)");
+  // manager.addAnswer('en', 'name', "Found sensitive detail(name)");
+
   manager.save('./model.nlp');
 };
 
-module.exports.trainNlp = async function trainNlp(manager, td, lang="en") {  
+module.exports.trainNlp = async function trainNlp(manager, td, lang = "en") {
   if (fs.existsSync('./model.nlp')) {
     manager.load('./model.nlp');
-  
+
     manager.addDocument(lang, td.text, td.category);
     console.log('Training, please wait..');
     const hrstart = process.hrtime();
     await manager.train();
     const hrend = process.hrtime(hrstart);
     console.info('Trained (hr): %ds %dms', hrend[0], hrend[1] / 1000000);
-    
-    manager.addAnswer(lang, td.category ,td.answer);
+
+    manager.addAnswer(lang, td.category, td.answer);
     manager.save('./model.nlp');
     return "Trained!";
   } else {
