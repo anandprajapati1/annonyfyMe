@@ -1,10 +1,12 @@
 const express = require('express');
 const { MyBot } = require("./src/bot");
 const bodyParser = require('body-parser');
+var cors = require('cors');
 
 const myBot = new MyBot();
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 app.post('/api/messages', async (req, res) => {
   const result = await myBot.onChat(req.body.message);
