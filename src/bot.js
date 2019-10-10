@@ -1,6 +1,8 @@
 // const { ActivityTypes } = require('botbuilder');
-const { NlpManager, ConversationContext  } = require('node-nlp/lib');
+const { NlpManager, ConversationContext } = require('node-nlp/lib');
 const { initTrainingNlp, trainNlp } = require('./train-nlp');
+const fs = require('fs');
+const UUID = require('uuid/v1');
 
 class MyBot {
   constructor() {
@@ -8,7 +10,14 @@ class MyBot {
     this.nlpManager = new NlpManager({ languages: [this.lang] });
     this.context = new ConversationContext();
     this.threshold = 0.75;
+    this.userId = 111;
     initTrainingNlp(this.nlpManager, console.log);
+    if (fs.existsSync('./conversation.json')) {
+      this.conversation = JSON.parse(fs.readFileSync('./conversation.json'));
+      // console.log(this.conversation);
+    } else {
+      console.log("not found");
+    }
   }
 
   async onChat_old(line) {
@@ -31,24 +40,26 @@ class MyBot {
   async onChat(line) {
     let _response = line;
     let _pii = [];
+    let result;
     try {
-      let result = await this.nlpManager.nerManager.findEntities(line, this.lang);
+      result = await this.nlpManager.nerManager.findEntities(line, this.lang);
       result = result.filter((x) => x.accuracy > this.threshold).sort((a, b) => b.accuracy - a.accuracy);
-      let answer="";
+      let answer = "";
       result.forEach(x => {
         let _ans = this.nlpManager.getAnswer(this.lang, x.entity);
         if (_ans) {
           answer += _ans + "\n";
           _response = _response.replace(x.sourceText, `<${x.entity}>`);
-          _pii.push({"key":x.entity, value: x.sourceText, confidence: x.accuracy});
+          _pii.push({ "key": x.entity, value: x.sourceText, confidence: x.accuracy });
         }
       });
-      
+
       console.log(answer);
       _response = `BOT> Saved data is: ${_response}`;
     } catch (error) {
       console.log(error);
     } finally {
+      this.saveData(new Conversation(_response, this.userId, "USER", result.map(x => { return { kay: x.entity, value: x.sourceText }; })));
       return _response;
     }
   }
@@ -60,6 +71,15 @@ class MyBot {
       console.log(error);
     }
   }
+
+  getChatData() {
+    return this.conversation.filter(x => x.initiator === this.userId);
+  }
+
+  saveData(d) {
+    this.conversation.push(d);
+    fs.writeFileSync('./conversation.json', JSON.stringify(this.conversation));
+  }
 }
 
 class QueryModel {
@@ -67,6 +87,19 @@ class QueryModel {
     this.text = _text;
     this.category = _cat;
     this.answer = _ans;
+  }
+}
+
+class Conversation {
+  constructor(_text = "", _initiator = 0, _type = "USER", _pii = [{ key: "", value: "", confidence: 0 }]) {
+    this.conId = UUID();
+    this.text = _text;
+    this.initiator = _initiator;
+    this.type = _type;
+    this.PII = _pii;
+    this.PII.forEach(x => {
+      x.conversationId = this.conId;
+    });
   }
 }
 

@@ -1,0 +1,63 @@
+[
+    {
+        "conId": "ca94ae60-eb0b-11e9-b37b-d163aefcb2b8",
+        "text": "BOT> Saved data is: Please cancel my cc eff from <date>.<name> and my cc num is <creditcard>. my mail id is <email> contact no is <phonenumber>",
+        "initiator": 111,
+        "type": "USER",
+        "PII": [
+            {
+                "kay": "name",
+                "value": " My name is Simon",
+                "conversationId": "ca94ae60-eb0b-11e9-b37b-d163aefcb2b8"
+            },
+            {
+                "kay": "creditcard",
+                "value": "2222-3333-4444-5555",
+                "conversationId": "ca94ae60-eb0b-11e9-b37b-d163aefcb2b8"
+            },
+            {
+                "kay": "date",
+                "value": "today",
+                "conversationId": "ca94ae60-eb0b-11e9-b37b-d163aefcb2b8"
+            },
+            {
+                "kay": "email",
+                "value": "manaqna@677.com.",
+                "conversationId": "ca94ae60-eb0b-11e9-b37b-d163aefcb2b8"
+            },
+            {
+                "kay": "boolean",
+                "value": "no",
+                "conversationId": "ca94ae60-eb0b-11e9-b37b-d163aefcb2b8"
+            },
+            {
+                "kay": "number",
+                "value": "9899664015",
+                "conversationId": "ca94ae60-eb0b-11e9-b37b-d163aefcb2b8"
+            },
+            {
+                "kay": "phonenumber",
+                "value": "9899664015",
+                "conversationId": "ca94ae60-eb0b-11e9-b37b-d163aefcb2b8"
+            }
+        ]
+    },
+    {
+        "conId": "e3b77710-eb0b-11e9-b37b-d163aefcb2b8",
+        "text": "BOT> Saved data is: uihfe <phonenumber> fbvf fv",
+        "initiator": 111,
+        "type": "USER",
+        "PII": [
+            {
+                "kay": "number",
+                "value": "8787878787",
+                "conversationId": "e3b77710-eb0b-11e9-b37b-d163aefcb2b8"
+            },
+            {
+                "kay": "phonenumber",
+                "value": "8787878787",
+                "conversationId": "e3b77710-eb0b-11e9-b37b-d163aefcb2b8"
+            }
+        ]
+    }
+]

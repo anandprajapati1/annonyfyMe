@@ -8,6 +8,13 @@ app.use(bodyParser.json());
 
 app.post('/api/messages', async (req, res) => {
   const result = await myBot.onChat(req.body.message);
+  // save in DB
+  res.send(result);
+});
+
+app.get('/api/getConversation', (req, res) => {
+  const result = myBot.getChatData();
+  // save in DB
   res.send(result);
 });
 
